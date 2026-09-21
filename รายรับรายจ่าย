@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ ตัวแปรสี ============ */
+:root{
+  --p1:#6C5CE7;  --p2:#A29BFE;
+  --green:#00D68F; --red:#FF5C7C;
+  --glass:rgba(255,255,255,.14);
+  --line:rgba(255,255,255,.28);
+  --txt:#ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:'Prompt',sans-serif;
+  min-height:100vh;
+  color:var(--txt);
+  background:linear-gradient(-45deg,#6C5CE7,#8E7CFF,#00CEC9,#FD79A8,#6C5CE7);
+  background-size:400% 400%;
+  animation:bgMove 18s ease infinite;
+  padding:18px 14px 40px;
+  overflow-x:hidden;
+}
+@keyframes bgMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* ============ ฟองลอยพื้นหลัง ============ */
+.blob{position:fixed;border-radius:50%;filter:blur(60px);opacity:.45;z-index:0;animation:float 14s ease-in-out infinite;}
+.b1{width:220px;height:220px;background:#FFD93D;top:-60px;left:-70px;}
+.b2{width:260px;height:260px;background:#00CEC9;bottom:-90px;right:-90px;animation-delay:-5s;}
+.b3{width:170px;height:170px;background:#FD79A8;top:45%;left:60%;animation-delay:-9s;}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(28px,-34px) scale(1.12)}66%{transform:translate(-22px,26px) scale(.92)}}
+
+.wrap{position:relative;z-index:2;max-width:480px;margin:0 auto;}
+
+/* ============ หัวเรื่อง ============ */
+.header{text-align:center;margin-bottom:18px;animation:dropIn .7s cubic-bezier(.34,1.56,.64,1);}
+.header .emoji{font-size:44px;display:inline-block;animation:coin 3s ease-in-out infinite;}
+@keyframes coin{0%,100%{transform:rotateY(0)}50%{transform:rotateY(360deg)}}
+.header h1{font-size:25px;font-weight:700;margin:4px 0 2px;text-shadow:0 3px 14px rgba(0,0,0,.25);}
+.header p{font-size:13px;opacity:.85;font-weight:300;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-26px)}to{opacity:1;transform:translateY(0)}}
+
+/* ============ การ์ดสรุปยอด ============ */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px;}
+.stat{
+  background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:16px;padding:11px 6px;text-align:center;
+  animation:popUp .6s backwards;transition:transform .25s;
+}
+.stat:nth-child(1){animation-delay:.1s}.stat:nth-child(2){animation-delay:.2s}.stat:nth-child(3){animation-delay:.3s}
+.stat:active{transform:scale(.95);}
+.stat .lb{font-size:10.5px;opacity:.8;font-weight:300;}
+.stat .vl{font-size:15.5px;font-weight:600;margin-top:3px;}
+.stat .vl.up{color:#B8FFE3;}.stat .vl.down{color:#FFC9D4;}
+@keyframes popUp{from{opacity:0;transform:scale(.8) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+/* ============ การ์ดฟอร์ม ============ */
+.card{
+  background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--line);border-radius:24px;padding:22px 18px;
+  box-shadow:0 18px 44px rgba(0,0,0,.22);
+  animation:slideUp .75s cubic-bezier(.22,1,.36,1) .15s backwards;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(38px)}to{opacity:1;transform:translateY(0)}}
+
+.field{margin-bottom:17px;}
+.field label{display:block;font-size:13.5px;font-weight:500;margin-bottom:8px;}
+.field label .req{color:#FFE066;}
+
+/* ============ ปุ่มเลือกประเภท ============ */
+.toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.toggle input{display:none;}
+.toggle label{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:14px 8px;border-radius:15px;cursor:pointer;
+  background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);
+  font-size:14.5px;font-weight:500;margin:0;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.toggle label:active{transform:scale(.94);}
+#tIn:checked  + label{background:linear-gradient(135deg,#00D68F,#00B894);border-color:#B8FFE3;box-shadow:0 8px 22px rgba(0,214,143,.45);transform:translateY(-3px);}
+#tOut:checked + label{background:linear-gradient(135deg,#FF5C7C,#E84393);border-color:#FFC9D4;box-shadow:0 8px 22px rgba(255,92,124,.45);transform:translateY(-3px);}
+
+/* ============ input / select ============ */
+select,input,textarea{
+  width:100%;padding:14px 15px;border-radius:15px;
+  border:2px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.12);color:#fff;
+  font-family:'Prompt',sans-serif;font-size:15px;
+  outline:none;transition:all .28s;
+}
+select option{background:#5B4BC4;color:#fff;}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.55);font-weight:300;}
+select:focus,input:focus,textarea:focus{
+  border-color:#FFE066;background:rgba(255,255,255,.22);
+  box-shadow:0 0 0 4px rgba(255,224,102,.2);transform:translateY(-2px);
+}
+textarea{resize:none;height:74px;}
+
+/* ช่องจำนวนเงิน */
+.money{position:relative;}
+.money input{padding-left:44px;font-size:22px;font-weight:600;letter-spacing:.5px;}
+.money .baht{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  font-size:20px;font-weight:600;opacity:.8;pointer-events:none;
+}
+.chips{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap;}
+.chip{
+  padding:6px 13px;border-radius:20px;font-size:12.5px;cursor:pointer;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+  transition:all .2s;
+}
+.chip:active{transform:scale(.9);background:#FFE066;color:#5B4BC4;font-weight:600;}
+
+/* ============ ปุ่มบันทึก ============ */
+.btn{
+  position:relative;width:100%;padding:17px;border:none;border-radius:17px;
+  background:linear-gradient(135deg,#FFD93D,#FF9A3D);
+  color:#4A3B00;font-family:'Prompt',sans-serif;font-size:17.5px;font-weight:700;
+  cursor:pointer;overflow:hidden;margin-top:4px;
+  box-shadow:0 10px 26px rgba(255,180,61,.45);
+  transition:transform .2s,box-shadow .2s;
+}
+.btn::before{
+  content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);
+  animation:shine 2.8s infinite;
+}
+@keyframes shine{0%{left:-120%}55%,100%{left:130%}}
+.btn:active{transform:scale(.96);box-shadow:0 4px 14px rgba(255,180,61,.4);}
+.btn:disabled{opacity:.65;cursor:not-allowed;}
+.btn .spin{
+  display:none;width:19px;height:19px;border:3px solid rgba(74,59,0,.3);
+  border-top-color:#4A3B00;border-radius:50%;animation:spin .7s linear infinite;
+  margin:0 auto;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn.loading .txt{display:none;} .btn.loading .spin{display:block;}
+
+/* ============ Toast แจ้งเตือน ============ */
+.toast{
+  position:fixed;left:50%;bottom:-140px;transform:translateX(-50%);
+  background:rgba(255,255,255,.97);color:#2D3436;
+  padding:15px 26px;border-radius:50px;font-size:15px;font-weight:600;
+  box-shadow:0 14px 40px rgba(0,0,0,.3);z-index:999;white-space:nowrap;
+  transition:bottom .55s cubic-bezier(.34,1.56,.64,1);
+}
+.toast.show{bottom:34px;}
+.toast.err{background:#FF5C7C;color:#fff;}
+
+/* ============ สั่น (error) ============ */
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+.shake{animation:shake .45s;}
+
+canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:998;}
+.foot{text-align:center;font-size:11.5px;opacity:.7;margin-top:18px;font-weight:300;}
+</style>
+</head>
+<body>
+
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<canvas id="cf"></canvas>
+
+<div class="wrap">
+
+  <div class="header">
+    <div class="emoji">💰</div>
+    <h1>บันทึกรายรับ-รายจ่าย</h1>
+    <p>จดทุกบาท รู้ทุกยอด เก็บเงินได้จริง ✨</p>
+  </div>
+
+  <!-- สรุปยอด -->
+  <div class="stats">
+    <div class="stat"><div class="lb">รายรับ</div><div class="vl up"   id="sIn">0</div></div>
+    <div class="stat"><div class="lb">รายจ่าย</div><div class="vl down" id="sOut">0</div></div>
+    <div class="stat"><div class="lb">คงเหลือ</div><div class="vl"      id="sBal">0</div></div>
+  </div>
+
+  <!-- ฟอร์ม -->
+  <div class="card" id="card">
+
+    <div class="field">
+      <label>ประเภท <span class="req">*</span></label>
+      <div class="toggle">
+        <input type="radio" name="type" id="tIn"  value="รายรับ">
+        <label for="tIn">💵 รายรับ</label>
+        <input type="radio" name="type" id="tOut" value="รายจ่าย" checked>
+        <label for="tOut">🛒 รายจ่าย</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>หมวดหมู่ <span class="req">*</span></label>
+      <select id="cat">
+        <option value="">-- เลือกหมวดหมู่ --</option>
+        <option value="ได้เงินไปโรงเรียน">🎒 ได้เงินไปโรงเรียน</option>
+        <option value="ค่าอาหาร">🍜 ค่าอาหาร</option>
+        <option value="ค่าเดินทาง">🚌 ค่าเดินทาง</option>
+        <option value="ค่าอุปกรณ์การเรียน">📚 ค่าอุปกรณ์การเรียน</option>
+        <option value="ค่าขนม/เที่ยวเล่น">🍿 ค่าขนม/เที่ยวเล่น</option>
+        <option value="เงินเก็บ">🐷 เงินเก็บ</option>
+        <option value="อื่นๆ">✨ อื่นๆ</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>จำนวนเงิน (บาท) <span class="req">*</span></label>
+      <div class="money">
+        <span class="baht">฿</span>
+        <input type="number" id="amt" inputmode="decimal" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="chips">
+        <span class="chip" onclick="quick(20)">+20</span>
+        <span class="chip" onclick="quick(50)">+50</span>
+        <span class="chip" onclick="quick(100)">+100</span>
+        <span class="chip" onclick="quick(500)">+500</span>
+        <span class="chip" onclick="clearAmt()">ล้าง</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>รายละเอียด <span style="opacity:.6;font-weight:300">(ไม่บังคับ)</span></label>
+      <textarea id="note" maxlength="120" placeholder="เช่น ข้าวกะเพราหน้าโรงเรียน..."></textarea>
+    </div>
+
+    <button class="btn" id="btn" onclick="save()">
+      <span class="txt">💾 บันทึกข้อมูล</span>
+      <span class="spin"></span>
+    </button>
+  </div>
+
+  <div class="foot">ข้อมูลถูกบันทึกลง Google Sheets อัตโนมัติ 🔒</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- โหลดสรุปยอดตอนเปิดหน้า ---------- */
+document.addEventListener('DOMContentLoaded', loadSummary);
+
+function loadSummary(){
+  google.script.run.withSuccessHandler(function(s){
+    animateNum('sIn',  s.income);
+    animateNum('sOut', s.expense);
+    animateNum('sBal', s.balance);
+    document.getElementById('sBal').style.color = s.balance >= 0 ? '#B8FFE3' : '#FFC9D4';
+  }).getSummary();
+}
+
+/* ---------- เอฟเฟกต์ตัวเลขวิ่ง ---------- */
+function animateNum(id, target){
+  var el = document.getElementById(id), cur = 0, step = target/28, i = 0;
+  var timer = setInterval(function(){
+    i++; cur += step;
+    if(i >= 28){ cur = target; clearInterval(timer); }
+    el.textContent = Number(cur).toLocaleString('th-TH',{maximumFractionDigits:0});
+  }, 22);
+}
+
+/* ---------- ปุ่มลัดจำนวนเงิน ---------- */
+function quick(n){
+  var a = document.getElementById('amt');
+  a.value = (Number(a.value) || 0) + n;
+  a.focus();
+}
+function clearAmt(){ document.getElementById('amt').value = ''; }
+
+/* ---------- แจ้งเตือน Toast ---------- */
+function toast(msg, isErr){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' err' : '');
+  setTimeout(function(){ t.className = 'toast' + (isErr ? ' err' : ''); }, 2800);
+}
+
+/* ---------- บันทึกข้อมูล ---------- */
+function save(){
+  var type = document.querySelector('input[name="type"]:checked').value;
+  var cat  = document.getElementById('cat').value;
+  var amt  = document.getElementById('amt').value;
+  var note = document.getElementById('note').value;
+
+  // ตรวจสอบก่อนส่ง
+  if(!cat){  err('กรุณาเลือกหมวดหมู่ 🙏'); return; }
+  if(!amt || Number(amt) <= 0){ err('กรุณากรอกจำนวนเงินให้ถูกต้อง 💸'); return; }
+
+  var btn = document.getElementById('btn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  google.script.run
+    .withSuccessHandler(function(res){
+      btn.classList.remove('loading');
+      btn.disabled = false;
+      if(res.success){
+        confetti();                 // 🎉 โปรยกระดาษ
+        toast('บันทึกสำเร็จ 🎉');
+        if(navigator.vibrate) navigator.vibrate([40,60,40]);
+        resetForm();
+        loadSummary();
+      } else {
+        err(res.message);
+      }
+    })
+    .withFailureHandler(function(e){
+      btn.classList.remove('loading');
+      btn.disabled = false;
+      err('เชื่อมต่อไม่สำเร็จ ลองใหม่อีกครั้ง');
+    })
+    .saveData({ type:type, category:cat, amount:amt, note:note });
+}
+
+function err(msg){
+  toast(msg, true);
+  var c = document.getElementById('card');
+  c.classList.add('shake');
+  setTimeout(function(){ c.classList.remove('shake'); }, 460);
+  if(navigator.vibrate) navigator.vibrate(180);
+}
+
+/* ---------- ล้างฟอร์ม ---------- */
+function resetForm(){
+  document.getElementById('cat').value  = '';
+  document.getElementById('amt').value  = '';
+  document.getElementById('note').value = '';
+  document.getElementById('tOut').checked = true;
+}
+
+/* ---------- เอฟเฟกต์ Confetti (เขียนเองล้วนๆ) ---------- */
+function confetti(){
+  var cv = document.getElementById('cf'), ctx = cv.getContext('2d');
+  cv.width = innerWidth; cv.height = innerHeight;
+  var colors = ['#FFD93D','#FF5C7C','#00D68F','#A29BFE','#00CEC9','#FF9A3D'];
+  var parts = [];
+  for(var i=0;i<110;i++){
+    parts.push({
+      x: Math.random()*cv.width,
+      y: -20 - Math.random()*cv.height*0.4,
+      w: 6 + Math.random()*7,
+      h: 9 + Math.random()*9,
+      c: colors[Math.floor(Math.random()*colors.length)],
+      vy: 2.5 + Math.random()*4,
+      vx: -1.6 + Math.random()*3.2,
+      rot: Math.random()*360,
+      vr: -7 + Math.random()*14
+    });
+  }
+  var frames = 0;
+  (function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    parts.forEach(function(p){
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI/180);
+      ctx.fillStyle = p.c;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    frames++;
+    if(frames < 190) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,cv.width,cv.height);
+  })();
+}
+</script>
+</body>
+</html>
